@@ -1,0 +1,7 @@
+node_modules/
+dist/
+build/
+coverage/
+_.min.js
+_.test.ts
+\*.spec.ts

@@ -1,50 +1,62 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+Version change: [NEW] 1.0.0 (template) → 1.0.0 (first full version)
+Modified principles: All replaced with project-specific principles
+Added sections: Security & Tenant Isolation, UI Consistency, Workflow
+Removed sections: None
+Templates requiring updates: ✅ plan-template.md, ✅ spec-template.md, ✅ tasks-template.md
+Follow-up TODOs: None
+-->
+
+# Project Management System Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Code Quality & Clean Coding
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+All code (frontend and backend) MUST adhere to strict linting, formatting, and clean code standards. Code reviews are mandatory. No code is merged without passing all quality gates. Rationale: Ensures maintainability, reduces bugs, and enforces consistency across the stack.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Modular Architecture
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+The system MUST be modular, with clear separation of concerns and reusable components. Each module (feature, service, or UI component) MUST be independently testable and deployable. Rationale: Enables scalability and easier onboarding for multi-tenant needs.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### III. API Consistency
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+All APIs (REST/GraphQL) MUST follow consistent naming, versioning, and error handling conventions. Breaking changes require a migration plan and version bump. Rationale: Ensures predictable integration for all tenants and clients.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### IV. Security & Tenant Isolation
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Tenant data MUST be strictly isolated at all layers (API, DB, UI). Principle of least privilege is enforced. All access is logged and auditable. Rationale: Protects tenant privacy and prevents data leaks.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### V. Performance Optimization
+
+All code and queries MUST be optimized for speed and resource efficiency. Caching, batching, and pagination are required for high-traffic endpoints. Rationale: Ensures responsive experience for all tenants.
+
+### VI. Strong Testing Practices
+
+Unit and integration tests are mandatory for all modules and APIs. Minimum coverage thresholds are enforced in CI. Rationale: Prevents regressions and ensures reliability at scale.
+
+### VII. UI Consistency
+
+Dashboards and Kanban views MUST follow a unified design system. All UI components are reusable and themeable. Rationale: Delivers a cohesive experience for all users and tenants.
+
+## Additional Constraints
+
+- **Technology Stack**: Frontend uses Next.js (React), backend uses Node.js (Express or Fastify).
+- **Compliance**: All code must comply with relevant data protection and security standards (e.g., GDPR if applicable).
+- **Deployment**: Automated CI/CD pipelines required. Infrastructure as Code (IaC) is recommended.
+
+## Development Workflow
+
+- All code changes require peer review and must pass all tests and linters.
+- Feature branches follow the naming convention `[###-feature-name]`.
+- No direct commits to main branch.
+- Releases require successful deployment to staging and sign-off from product owner.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other development practices. Amendments require documentation, team approval, and a migration plan. All PRs and reviews must verify compliance with these principles. Complexity must be justified. Use this constitution as the primary reference for runtime and development guidance.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-04-30 | **Last Amended**: 2026-04-30
+
+<!-- Version: 1.0.0 | Ratified: 2026-04-30 | Last Amended: 2026-04-30 -->
