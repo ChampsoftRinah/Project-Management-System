@@ -25,6 +25,17 @@ export interface Task {
   updated_at: string;
 }
 
+export interface TaskHistory {
+  id: string;
+  tenant_id: string;
+  task_id: string;
+  changed_by: string;
+  action: string;
+  old_value?: Record<string, any>;
+  new_value?: Record<string, any>;
+  changed_at: string;
+}
+
 export interface User {
   id: string;
   tenant_id: string;
@@ -37,8 +48,23 @@ export interface User {
   updated_at: string;
 }
 
+export type Role =
+  | 'Developer'
+  | 'QA Engineer'
+  | 'Project Manager'
+  | 'Business Analyst'
+  | 'Tenant Admin';
+
 export interface AnalyticsMetrics {
   completion_rate: number;
   bottlenecks: Array<{ status: string; count: number; avg_time_hours: number }>;
   team_velocity: Array<{ developer: string; tasks_completed: number }>;
+}
+
+export interface AnalyticsSummary {
+  completion_rate: number;
+  bottlenecks: Array<{ status: string; count: number }>;
+  team_velocity: Array<{ assignee_id: string; completed_tasks: number }>;
+  total_tasks: number;
+  completed_tasks: number;
 }

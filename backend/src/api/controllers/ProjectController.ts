@@ -46,4 +46,35 @@ export class ProjectController {
       return res.status(500).json(errorResponse('INTERNAL_SERVER_ERROR', error.message));
     }
   }
+
+  async update(req: Request, res: Response) {
+    try {
+      const tenantId = (req as any).tenant_id;
+      const userId = (req as any).user?.sub;
+      const { id } = req.params;
+      const { name, description, is_active } = req.body;
+
+      const project = await projectService.updateProject(tenantId, id, userId, {
+        name,
+        description,
+        is_active,
+      });
+      return res.json(successResponse(project));
+    } catch (error: any) {
+      return res.status(400).json(errorResponse('BAD_REQUEST', error.message));
+    }
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const tenantId = (req as any).tenant_id;
+      const userId = (req as any).user?.sub;
+      const { id } = req.params;
+
+      await projectService.deleteProject(tenantId, id, userId);
+      return res.status(204).send();
+    } catch (error: any) {
+      return res.status(400).json(errorResponse('BAD_REQUEST', error.message));
+    }
+  }
 }

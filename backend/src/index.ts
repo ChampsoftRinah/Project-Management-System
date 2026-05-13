@@ -1,7 +1,13 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import { errorMiddleware } from './api/middleware/errorMiddleware';
-import { authMiddleware } from './api/middleware/authMiddleware';
-import { tenantMiddleware } from './api/middleware/tenantMiddleware';
+
+// Import route handlers
+import authRoutes from './api/routes/auth';
+import projectRoutes from './api/routes/projects';
+import taskRoutes from './api/routes/tasks';
+import analyticsRoutes from './api/routes/analytics';
+import userRoutes from './api/routes/users';
+import auditRoutes from './api/routes/audit';
 
 const app: Express = express();
 
@@ -15,22 +21,23 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Mount routes (to be imported)
-// app.use('/api/v1/auth', authRoutes);
-// app.use('/api/v1/projects', projectRoutes);
-// app.use('/api/v1/tasks', taskRoutes);
-// app.use('/api/v1/analytics', analyticsRoutes);
-// app.use('/api/v1/users', userRoutes);
+// Mount routes
+app.use('/api/v1', authRoutes);
+app.use('/api/v1', projectRoutes);
+app.use('/api/v1', taskRoutes);
+app.use('/api/v1', analyticsRoutes);
+app.use('/api/v1', userRoutes);
+app.use('/api/v1', auditRoutes);
 
 // Health check
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok' });
 });
 
 // Error handling middleware (must be last)
 app.use(errorMiddleware);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`Backend server listening on port ${PORT}`);
 });

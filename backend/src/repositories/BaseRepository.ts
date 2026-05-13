@@ -1,7 +1,7 @@
 import { query } from '../config/database';
 
 export class BaseRepository<T> {
-  protected tableName: string;
+  protected tableName!: string;
 
   async findById(id: string, tenantId: string): Promise<T | null> {
     const result = await query(`SELECT * FROM ${this.tableName} WHERE id = $1 AND tenant_id = $2`, [

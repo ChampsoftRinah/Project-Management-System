@@ -33,4 +33,20 @@ export class UserRoleRepository extends BaseRepository<UserRole> {
     );
     return parseInt(result.rows[0].count, 10) > 0;
   }
+
+  async listRolesForUsers(tenantId: string, userIds: string[]): Promise<Record<string, string[]>> {
+    if (userIds.length === 0) {
+      return {};
+    }
+
+    const result = await query(
+      `SELECT user_id, array_agg(role) AS roles FROM ${this.tableName} WHERE tenant_id = $1 AND user_id = ANY($2) GROUP BY user_id`,
+      [tenantId, userIds]
+    );
+
+    return result.rows.reduce((acc: Record<string, string[]>, row: any) => {
+      acc[row.user_id] = row.roles || [];
+      return acc;
+    }, {});
+  }
 }

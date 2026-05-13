@@ -1,16 +1,20 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import apiClient from '../services/api';
 
-export function useApi<T>(url: string) {
+export function useApi<T>(url?: string | null) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
 
-  const fetch = useCallback(async () => {
+  const refetch = useCallback(async () => {
+    if (!url) {
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await apiClient.get(url);
-      setData(response.data);
+      setData(response.data.data);
       setError(null);
     } catch (err) {
       setError(err);
@@ -20,5 +24,12 @@ export function useApi<T>(url: string) {
     }
   }, [url]);
 
-  return { data, loading, error, fetch };
+  useEffect(() => {
+    if (!url) {
+      return;
+    }
+    refetch();
+  }, [url, refetch]);
+
+  return { data, loading, error, refetch };
 }

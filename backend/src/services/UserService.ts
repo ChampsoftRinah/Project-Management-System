@@ -13,7 +13,14 @@ export class UserService extends BaseService {
   }
 
   async listUsers(tenantId: string, limit: number = 50, offset: number = 0): Promise<User[]> {
-    return userRepository.listActiveByTenant(tenantId, limit, offset);
+    const users = await userRepository.listActiveByTenant(tenantId, limit, offset);
+    const userIds = users.map((user) => user.id);
+    const rolesByUser = await userRoleRepository.listRolesForUsers(tenantId, userIds);
+
+    return users.map((user) => ({
+      ...user,
+      roles: rolesByUser[user.id] || [],
+    }));
   }
 
   async assignRole(

@@ -1,5 +1,6 @@
 import { BaseService } from './BaseService';
 import { ProjectRepository } from '../repositories/ProjectRepository';
+import AuditService from './AuditService';
 import { Project } from '../types/entities';
 
 const projectRepository = new ProjectRepository();
@@ -19,6 +20,12 @@ export class ProjectService extends BaseService {
       created_by: userId,
     });
 
+    // Log audit entry
+    await AuditService.logAction(tenantId, userId, 'create', 'project', project.id, {
+      name: data.name,
+      description: data.description,
+    });
+
     this.log(`Project created: ${project.id}`);
     return project;
   }
@@ -34,15 +41,31 @@ export class ProjectService extends BaseService {
   async updateProject(
     tenantId: string,
     projectId: string,
+    userId: string,
     data: Partial<Project>
   ): Promise<Project> {
     const project = await projectRepository.update(projectId, tenantId, data);
+
+    // Log audit entry
+    await AuditService.logAction(tenantId, userId, 'update', 'project', projectId, data);
+
     this.log(`Project updated: ${projectId}`);
     return project;
   }
 
-  async deleteProject(tenantId: string, projectId: string): Promise<void> {
+  async deleteProject(tenantId: string, projectId: string, userId: string): Promise<void> {
+    const project = await projectRepository.findByIdAndTenant(projectId, tenantId);
+
     await projectRepository.delete(projectId, tenantId);
+
+    // Log audit entry
+    if (project) {
+      await AuditService.logAction(tenantId, userId, 'delete', 'project', projectId, {
+        name: project.name,
+        description: project.description,
+      });
+    }
+
     this.log(`Project deleted: ${projectId}`);
   }
 }

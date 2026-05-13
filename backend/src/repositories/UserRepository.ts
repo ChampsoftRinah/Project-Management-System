@@ -7,7 +7,7 @@ export class UserRepository extends BaseRepository<User> {
 
   async findByEmailAndTenant(email: string, tenantId: string): Promise<User | null> {
     const result = await query(
-      `SELECT * FROM ${this.tableName} WHERE tenant_id = $1 AND email = $2`,
+      `SELECT * FROM ${this.tableName} WHERE tenant_id = $1 AND email = $2 AND is_active = true`,
       [tenantId, email]
     );
     return result.rows[0] || null;

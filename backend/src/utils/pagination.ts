@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-
 export function generateCursor(data: any): string {
   return Buffer.from(JSON.stringify(data)).toString('base64');
 }
