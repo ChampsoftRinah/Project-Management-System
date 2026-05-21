@@ -12,7 +12,7 @@ router.get(
   '/projects/:project_id/tasks',
   authMiddleware,
   tenantMiddleware,
-  authorizationMiddleware(['Developer', 'QA Engineer', 'Project Manager']),
+  authorizationMiddleware(['Tenant Admin', 'Developer', 'QA Engineer', 'Project Manager']),
   taskController.list
 );
 
@@ -21,7 +21,7 @@ router.post(
   '/projects/:project_id/tasks',
   authMiddleware,
   tenantMiddleware,
-  authorizationMiddleware(['Developer', 'QA Engineer', 'Project Manager']),
+  authorizationMiddleware(['Tenant Admin', 'Developer', 'QA Engineer', 'Project Manager']),
   taskController.create
 );
 
@@ -30,7 +30,7 @@ router.get(
   '/projects/:project_id/tasks/:task_id',
   authMiddleware,
   tenantMiddleware,
-  authorizationMiddleware(['Developer', 'QA Engineer', 'Project Manager']),
+  authorizationMiddleware(['Tenant Admin', 'Developer', 'QA Engineer', 'Project Manager']),
   taskController.findById
 );
 
@@ -39,7 +39,7 @@ router.patch(
   '/projects/:project_id/tasks/:task_id',
   authMiddleware,
   tenantMiddleware,
-  authorizationMiddleware(['Developer', 'QA Engineer', 'Project Manager']),
+  authorizationMiddleware(['Tenant Admin', 'Developer', 'QA Engineer', 'Project Manager']),
   taskController.update
 );
 
@@ -48,7 +48,7 @@ router.delete(
   '/projects/:project_id/tasks/:task_id',
   authMiddleware,
   tenantMiddleware,
-  authorizationMiddleware(['Project Manager']),
+  authorizationMiddleware(['Tenant Admin', 'Project Manager']),
   taskController.delete
 );
 
@@ -57,7 +57,7 @@ router.get(
   '/projects/:project_id/tasks/:task_id/history',
   authMiddleware,
   tenantMiddleware,
-  authorizationMiddleware(['Developer', 'QA Engineer', 'Project Manager']),
+  authorizationMiddleware(['Tenant Admin', 'Developer', 'QA Engineer', 'Project Manager']),
   taskController.getHistory
 );
 

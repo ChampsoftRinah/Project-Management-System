@@ -23,41 +23,43 @@ export default function KanbanColumn({
     disabled: !isDropAllowed,
   });
 
-  const getColumnColor = (status: string) => {
-    const colors = {
-      Open: 'border-gray-300',
-      'Ready for Development': 'border-blue-300',
-      'In Development': 'border-yellow-300',
-      'Development Completed': 'border-purple-300',
-      'Ready for QA': 'border-indigo-300',
-      'In QA': 'border-orange-300',
-      'QA Passed': 'border-green-300',
-      'QA Failed': 'border-red-300',
+  const getColumnBg = () => {
+    const colors: Record<string, string> = {
+      Open: 'bg-slate-900/80 border-slate-800',
+      'Ready for Development': 'bg-slate-900/80 border-sky-700',
+      'In Development': 'bg-slate-900/80 border-sky-600',
+      'Development Completed': 'bg-slate-900/80 border-violet-700',
+      'Ready for QA': 'bg-slate-900/80 border-indigo-700',
+      'In QA': 'bg-slate-900/80 border-slate-800',
+      'QA Passed': 'bg-slate-900/80 border-emerald-700',
+      'QA Failed': 'bg-slate-900/80 border-rose-700',
     };
-    return colors[status as keyof typeof colors] || 'border-gray-300';
+    return colors[title] ?? 'bg-slate-900/80 border-slate-800';
   };
 
   return (
     <div
       ref={setNodeRef}
-      className={`flex-shrink-0 w-80 bg-gray-50 rounded-lg border-2 ${
+      className={`flex-shrink-0 w-80 rounded-[28px] border-2 p-0 transition duration-300 ${
         isOver
-          ? 'border-primary bg-blue-50'
+          ? 'border-blue-400/50 bg-slate-900/90 shadow-[0_0_0_3px_rgba(59,130,246,0.15)]'
           : isDropAllowed
-            ? getColumnColor(title)
-            : 'border-gray-200 bg-gray-100 opacity-70'
-      } transition-colors`}
+            ? getColumnBg()
+            : 'border-slate-800 bg-slate-950/90 opacity-80'
+      }`}
     >
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="font-semibold text-gray-900 flex items-center justify-between">
-          {title}
-          <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+      <div className="rounded-t-[26px] border-b border-slate-800 bg-slate-950/95 px-4 py-4">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
+            {title}
+          </h3>
+          <span className="rounded-full bg-slate-900/80 px-3 py-1 text-xs font-semibold text-slate-300">
             {tasks.length}
           </span>
-        </h3>
+        </div>
       </div>
 
-      <div className="p-4 space-y-3 min-h-[400px]">
+      <div className="p-4 min-h-[420px] space-y-3">
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
             <SortableTaskCard key={task.id} task={task} projectId={projectId} />
@@ -65,7 +67,7 @@ export default function KanbanColumn({
         </SortableContext>
 
         {tasks.length === 0 && (
-          <div className="text-center text-gray-400 py-8">
+          <div className="flex h-full items-center justify-center rounded-3xl bg-slate-950/70 p-4 text-center text-sm text-slate-500">
             {isDropAllowed
               ? `No tasks in ${title.toLowerCase()}`
               : `Cannot move current task to ${title.toLowerCase()}`}

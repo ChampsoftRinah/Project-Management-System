@@ -10,24 +10,24 @@ export default function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Completion Rate</h3>
-          <div className="text-4xl font-bold text-green-600">{data.completion_rate}%</div>
-          <p className="text-sm text-gray-500 mt-3">
+        <div className="rounded-[28px] border border-slate-800 bg-slate-950/90 p-6 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.9)]">
+          <h3 className="text-lg font-semibold text-slate-100 mb-2">Completion Rate</h3>
+          <div className="text-4xl font-bold text-sky-300">{data.completion_rate}%</div>
+          <p className="text-sm text-slate-400 mt-3">
             {data.completed_tasks} of {data.total_tasks} tasks completed.
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Tasks</h3>
-          <div className="text-4xl font-bold text-primary">{data.total_tasks}</div>
-          <p className="text-sm text-gray-500 mt-3">Current task count in this project.</p>
+        <div className="rounded-[28px] border border-slate-800 bg-slate-950/90 p-6 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.9)]">
+          <h3 className="text-lg font-semibold text-slate-100 mb-2">Total Tasks</h3>
+          <div className="text-4xl font-bold text-sky-300">{data.total_tasks}</div>
+          <p className="text-sm text-slate-400 mt-3">Current task count for this project.</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Completed Tasks</h3>
-          <div className="text-4xl font-bold text-indigo-600">{data.completed_tasks}</div>
-          <p className="text-sm text-gray-500 mt-3">Tasks finished with QA Passed.</p>
+        <div className="rounded-[28px] border border-slate-800 bg-slate-950/90 p-6 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.9)]">
+          <h3 className="text-lg font-semibold text-slate-100 mb-2">Completed Tasks</h3>
+          <div className="text-4xl font-bold text-cyan-300">{data.completed_tasks}</div>
+          <p className="text-sm text-slate-400 mt-3">Tasks finished with QA Passed.</p>
         </div>
       </div>
 

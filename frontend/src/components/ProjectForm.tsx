@@ -1,5 +1,9 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
 import apiClient from '../services/api';
+import { getFriendlyErrorMessage } from '../utils/errors';
+import Button from './ui/Button';
+import { Input, Textarea } from './ui/Input';
+import Modal from './ui/Modal';
 
 interface ProjectFormProps {
   onSuccess: () => void;
@@ -10,12 +14,12 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
-    setError('');
+    setError(null);
 
     try {
       await apiClient.post('/projects', { name, description });
@@ -24,7 +28,7 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
       setDescription('');
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Failed to create project');
+      setError(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -32,77 +36,69 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
 
   return (
     <div className="relative">
-      <button
+      <Button
+        id="open-new-project-button"
         type="button"
         onClick={() => setIsOpen(true)}
-        className="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700"
+        className="rounded-full"
       >
         New Project
-      </button>
+      </Button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">New Project</h3>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-900"
-              >
-                Close
-              </button>
-            </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="projectName" className="block text-sm font-medium text-gray-700">
-                  Project Name
-                </label>
-                <input
-                  id="projectName"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="projectDescription"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="projectDescription"
-                  rows={3}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-                />
-              </div>
-              {error && <p className="text-sm text-red-600">{error}</p>}
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-4 py-2 rounded bg-primary text-white hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {loading ? 'Creating...' : 'Create Project'}
-                </button>
-              </div>
-            </form>
+      <Modal title="Create a new project" isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label
+              htmlFor="projectName"
+              className="mb-2 block text-sm font-semibold text-slate-700"
+            >
+              Project name
+            </label>
+            <Input
+              id="projectName"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter a memorable project name"
+              required
+            />
           </div>
-        </div>
-      )}
+
+          <div>
+            <label
+              htmlFor="projectDescription"
+              className="mb-2 block text-sm font-semibold text-slate-700"
+            >
+              Description
+            </label>
+            <Textarea
+              id="projectDescription"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              placeholder="Add a brief summary of the project goals"
+            />
+          </div>
+
+          {error && (
+            <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>
+          )}
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsOpen(false)}
+              className="w-full sm:w-auto"
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading} className="w-full sm:w-auto">
+              {loading ? 'Creating project...' : 'Create project'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

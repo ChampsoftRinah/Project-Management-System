@@ -1,5 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import { errorMiddleware } from './api/middleware/errorMiddleware';
+import { getCorsOptions } from './config/cors';
 
 // Import route handlers
 import authRoutes from './api/routes/auth';
@@ -13,6 +15,9 @@ const app: Express = express();
 
 // Body parser middleware
 app.use(express.json());
+
+// CORS middleware
+app.use(cors(getCorsOptions()));
 
 // Request ID middleware
 app.use((req: Request, res: Response, next: NextFunction) => {

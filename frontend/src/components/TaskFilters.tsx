@@ -34,15 +34,28 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({ users, onFiltersChange }) => 
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow mb-4">
-      <h3 className="text-lg font-medium mb-3">Filter Tasks</h3>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="rounded-[28px] border border-slate-800 bg-slate-950/90 p-6 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.9)] mb-4">
+      <div className="flex items-center justify-between gap-4 flex-col sm:flex-row">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <h3 className="text-lg font-semibold text-white">Filter Tasks</h3>
+          <p className="mt-1 text-sm text-slate-400">
+            Refine the task list with status, assignee, priority, or title.
+          </p>
+        </div>
+        <button
+          onClick={clearFilters}
+          className="rounded-full bg-slate-900/80 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-800"
+        >
+          Clear Filters
+        </button>
+      </div>
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div>
+          <label className="block text-sm font-semibold text-slate-300 mb-2">Status</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
           >
             <option value="">All Statuses</option>
             <option value="Open">Open</option>
@@ -57,11 +70,11 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({ users, onFiltersChange }) => 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Assignee</label>
+          <label className="block text-sm font-semibold text-slate-300 mb-2">Assignee</label>
           <select
             value={assigneeId}
             onChange={(e) => setAssigneeId(e.target.value)}
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
           >
             <option value="">All Assignees</option>
             {users.map((user) => (
@@ -73,11 +86,11 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({ users, onFiltersChange }) => 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+          <label className="block text-sm font-semibold text-slate-300 mb-2">Priority</label>
           <select
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
           >
             <option value="">All Priorities</option>
             <option value="Low">Low</option>
@@ -88,24 +101,15 @@ const TaskFilters: React.FC<TaskFiltersProps> = ({ users, onFiltersChange }) => 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Search Title</label>
+          <label className="block text-sm font-semibold text-slate-300 mb-2">Search Title</label>
           <input
             type="text"
             value={titleSearch}
             onChange={(e) => setTitleSearch(e.target.value)}
             placeholder="Search task titles..."
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+            className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-100 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
           />
         </div>
-      </div>
-
-      <div className="mt-3">
-        <button
-          onClick={clearFilters}
-          className="text-sm text-gray-600 hover:text-gray-800 underline"
-        >
-          Clear Filters
-        </button>
       </div>
     </div>
   );

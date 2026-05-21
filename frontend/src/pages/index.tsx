@@ -8,7 +8,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/projects');
+      router.replace('/dashboard');
     } else {
       router.replace('/auth/login');
     }

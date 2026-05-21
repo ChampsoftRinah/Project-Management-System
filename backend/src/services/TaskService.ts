@@ -21,9 +21,8 @@ export class TaskService extends BaseService {
       labels?: string[];
     }
   ): Promise<Task> {
-    if (!data.title) {
-      throw new Error('Task title is required');
-    }
+    const { requireString } = await import('../utils/validation');
+    requireString(data.title, 'Task title');
 
     if (data.priority && !validatePriority(data.priority)) {
       throw new Error('Invalid priority');

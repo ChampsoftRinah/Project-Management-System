@@ -20,9 +20,14 @@ export class BaseRepository<T> {
   }
 
   async create(tenantId: string, data: any): Promise<T> {
-    const keys = Object.keys(data);
-    const values = Object.values(data);
-    const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
+    const payload = { ...data };
+    if (!payload.id) {
+      payload.id = require('crypto').randomUUID();
+    }
+
+    const keys = Object.keys(payload);
+    const values = Object.values(payload);
+    const placeholders = keys.map((_, i) => `$${i + 2}`).join(', ');
     const result = await query(
       `INSERT INTO ${this.tableName} (tenant_id, ${keys.join(', ')}) VALUES ($1, ${placeholders}) RETURNING *`,
       [tenantId, ...values]

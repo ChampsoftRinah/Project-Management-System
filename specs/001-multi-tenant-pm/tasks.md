@@ -63,6 +63,10 @@
 - [ ] T025 [P] Create authorization middleware: `backend/src/api/middleware/authorizationMiddleware.ts` (role-based access control, check required roles per endpoint)
 - [ ] T026 [P] Create error handling middleware: `backend/src/api/middleware/errorMiddleware.ts` (catch exceptions, format standard error response with code, message, details)
 - [ ] T027 Create base request context interface: `backend/src/types/RequestContext.ts` (user_id, tenant_id, roles)
+- [ ] T151 [P] Add signup route definitions: `backend/src/api/routes/auth.ts` (POST /auth/signup, POST /auth/login, POST /auth/refresh)
+- [ ] T152 [P] Implement auth signup flow: `backend/src/api/controllers/AuthController.ts` and `backend/src/services/AuthService.ts` (create tenant, create admin user, issue JWT)
+- [ ] T153 [P] Add signup page: `frontend/src/pages/auth/signup.tsx` (tenant name, admin details, email, password, POST /auth/signup)
+- [ ] T154 [P] Add signup UI component: `frontend/src/components/SignupForm.tsx` (tenant onboarding form, validation, submit flow)
 
 ### Base Models & Utilities
 
@@ -88,11 +92,14 @@
 
 - [ ] T042 Create Next.js pages directory structure: `frontend/src/pages/{auth,projects,dashboard,(settings)}`
 - [ ] T043 [P] Create Tailwind CSS global styles: `frontend/src/styles/globals.css` (theme colors, typography, spacing from constitution design system)
-- [ ] T044 [P] Create API client service: `frontend/src/services/api.ts` (axios instance with tenant-id scoping, JWT token handling, error response handling)
-- [ ] T045 [P] Create auth context & hooks: `frontend/src/context/AuthContext.tsx` and `frontend/src/hooks/useAuth.ts` (manage JWT token, user state, tenant_id, role checks)
-- [ ] T046 [P] Create custom hooks: `frontend/src/hooks/useApi.ts` (fetch wrapper with error handling, loading state, pagination support)
-- [ ] T047 [P] Create base layout component: `frontend/src/components/Layout.tsx` (navbar, sidebar, user menu, tenant selector)
-- [ ] T048 [P] Create TypeScript interfaces for frontend: `frontend/src/types/index.ts` (Project, Task, User, analytics metrics matching backend contracts)
+- [ ] T044 [P] Create reusable UI primitives: `frontend/src/components/ui/{Button.tsx,Input.tsx,Card.tsx,Badge.tsx,Modal.tsx,Table.tsx,Loader.tsx}`
+- [ ] T045 [P] Create API client service: `frontend/src/services/api.ts` (axios instance with tenant-id scoping, JWT token handling, error response handling)
+- [ ] T046 [P] Create auth context & hooks: `frontend/src/context/AuthContext.tsx` and `frontend/src/hooks/useAuth.ts` (manage JWT token, user state, tenant_id, role checks)
+- [ ] T047 [P] Create custom hooks: `frontend/src/hooks/useApi.ts` (fetch wrapper with error handling, loading state, pagination support)
+- [ ] T048 [P] Create base layout component: `frontend/src/components/Layout.tsx` (navbar, sidebar, user menu, tenant selector)
+- [ ] T049 [P] Create TypeScript interfaces for frontend: `frontend/src/types/index.ts` (Project, Task, User, analytics metrics matching backend contracts)
+- [ ] T155 [P] Create authentication UI pages: `frontend/src/pages/auth/login.tsx`, `frontend/src/pages/auth/signup.tsx` using reusable UI primitives.
+- [ ] T156 [P] Create tenant onboarding and signup modal components: `frontend/src/components/SignupForm.tsx` and `frontend/src/components/OnboardingCard.tsx`.
 
 **Checkpoint**: All foundational infrastructure complete - user story implementation can now proceed in parallel
 
@@ -400,8 +407,8 @@ Within Phase 8, tasks marked [P] can run in parallel.
 
 ## Format Validation Checklist
 
-✅ All 150 tasks follow strict format: `- [ ] [T###] [P?] [Story?] Description with file path`  
-✅ All tasks have unique sequential IDs (T001–T150)  
+✅ All 156 tasks follow strict format: `- [ ] [T###] [P?] [Story?] Description with file path`  
+✅ All tasks have unique sequential IDs (T001–T156)  
 ✅ Parallelizable tasks marked with [P]  
 ✅ User story tasks marked with [US1], [US2], [US3], [US4], [US5]  
 ✅ All file paths include backend/ or frontend/ prefix per project structure  

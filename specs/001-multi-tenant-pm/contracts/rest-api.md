@@ -110,6 +110,46 @@ All errors return JSON with status code in 4xx or 5xx range:
 
 ---
 
+### POST /auth/signup
+
+**Purpose**: Create a new tenant and admin user, then issue JWT token.
+
+**Request**:
+
+```json
+{
+  "tenant_name": "Acme Corp",
+  "admin_first_name": "John",
+  "admin_last_name": "Doe",
+  "email": "owner@acme.com",
+  "password": "securePassword123"
+}
+```
+
+**Response** (201 Created):
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "user-uuid-001",
+    "email": "owner@acme.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "roles": ["Tenant Admin"],
+    "tenant_id": "org-001"
+  },
+  "expires_in": 86400
+}
+```
+
+**Errors**:
+
+- 400: Validation error for missing or invalid signup fields
+- 409: Tenant or email already exists
+
+---
+
 ### POST /auth/refresh
 
 **Purpose**: Refresh expired JWT token

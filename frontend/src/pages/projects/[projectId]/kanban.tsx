@@ -1,51 +1,84 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../../hooks/useAuth';
 import { useApi } from '../../../hooks/useApi';
 import { Task } from '../../../types';
-import Layout from '../../../components/Layout';
 import KanbanBoard from '../../../components/KanbanBoard';
+import ProjectLayout from '../../../components/ProjectLayout';
 
 export default function KanbanPage() {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   const { projectId } = router.query;
-  const { data: tasks, loading, error, refetch } = useApi<Task[]>(`/projects/${projectId}/tasks`);
+  const projectIdString = Array.isArray(projectId) ? projectId[0] : projectId;
+  const {
+    data: tasks,
+    loading,
+    error,
+    refetch,
+  } = useApi<Task[]>(projectIdString ? `/projects/${projectIdString}/tasks` : null);
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/auth/login');
       return;
     }
-    if (projectId) {
+    if (projectIdString) {
       refetch();
     }
-  }, [isAuthenticated, projectId, refetch, router]);
+  }, [isAuthenticated, projectIdString, refetch, router]);
 
   if (!isAuthenticated) {
-    return <div>Loading...</div>;
+    return <div className="p-6 text-center text-slate-600">Loading...</div>;
+  }
+
+  if (!projectIdString) {
+    return <div className="p-6 text-center text-slate-600">Loading project...</div>;
   }
 
   return (
-    <Layout>
-      <div className="px-4 py-6 sm:px-0">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Kanban Board</h1>
-          <button
-            onClick={() => router.push(`/projects/${projectId}/tasks`)}
-            className="text-primary hover:text-blue-700"
-          >
-            View as List →
-          </button>
-        </div>
+    <ProjectLayout projectId={projectIdString} activeTab="kanban">
+      <div className="space-y-6">
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-slate-900">Kanban Board</h1>
+              <p className="text-sm text-slate-500 mt-1">
+                Drag tasks along the workflow to update status and keep the team moving.
+              </p>
+            </div>
+            <button
+              onClick={() => router.push(`/projects/${projectIdString}/tasks`)}
+              className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+            >
+              View as List →
+            </button>
+          </div>
+        </section>
 
-        {loading && <div>Loading tasks...</div>}
-        {error && <div className="text-red-600">Error loading tasks</div>}
+        {loading && (
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-8 text-center text-slate-500">
+            Loading tasks...
+          </div>
+        )}
 
-        {tasks && (
-          <KanbanBoard tasks={tasks} projectId={projectId as string} onTaskUpdate={refetch} />
+        {error && (
+          <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-center text-red-700">
+            Error loading task board.
+          </div>
+        )}
+
+        {tasks && tasks.length > 0 ? (
+          <KanbanBoard tasks={tasks} projectId={projectIdString} onTaskUpdate={refetch} />
+        ) : (
+          !loading &&
+          !error && (
+            <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-12 text-center text-slate-500">
+              No tasks available for this project.
+            </div>
+          )
         )}
       </div>
-    </Layout>
+    </ProjectLayout>
   );
 }

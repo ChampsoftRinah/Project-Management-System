@@ -2,6 +2,7 @@ import { BaseService } from './BaseService';
 import { ProjectRepository } from '../repositories/ProjectRepository';
 import AuditService from './AuditService';
 import { Project } from '../types/entities';
+import { requireString } from '../utils/validation';
 
 const projectRepository = new ProjectRepository();
 
@@ -11,9 +12,7 @@ export class ProjectService extends BaseService {
     userId: string,
     data: { name: string; description?: string }
   ): Promise<Project> {
-    if (!data.name) {
-      throw new Error('Project name is required');
-    }
+    requireString(data.name, 'Project name');
 
     const project = await projectRepository.create(tenantId, {
       ...data,
@@ -56,7 +55,7 @@ export class ProjectService extends BaseService {
   async deleteProject(tenantId: string, projectId: string, userId: string): Promise<void> {
     const project = await projectRepository.findByIdAndTenant(projectId, tenantId);
 
-    await projectRepository.delete(projectId, tenantId);
+    await projectRepository.softDelete(projectId, tenantId);
 
     // Log audit entry
     if (project) {

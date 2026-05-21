@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 28, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/RINAH/Project_Management_System/frontend/src/hooks/useAuth.ts"],"sourcesContent":["export { useAuth } from '../context/AuthContext';\r\n"],"names":[],"mappings":";AAAA"}},
-    {"offset": {"line": 35, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/RINAH/Project_Management_System/frontend/src/pages/index.tsx"],"sourcesContent":["import { useEffect } from 'react';\r\nimport { useRouter } from 'next/router';\r\nimport { useAuth } from '../hooks/useAuth';\r\n\r\nexport default function HomePage() {\r\n  const router = useRouter();\r\n  const { isAuthenticated } = useAuth();\r\n\r\n  useEffect(() => {\r\n    if (isAuthenticated) {\r\n      router.replace('/projects');\r\n    } else {\r\n      router.replace('/auth/login');\r\n    }\r\n  }, [isAuthenticated, router]);\r\n\r\n  return <div className=\"min-h-screen flex items-center justify-center\">Redirecting...</div>;\r\n}\r\n"],"names":["HomePage","router","isAuthenticated","replace","className"],"mappings":";;;;;AAAA;AACA;AACA;AAAA;;;;;AAEe,SAASA;IACtB,MAAMC,SAAS,IAAA,oIAAS;IACxB,MAAM,EAAEC,eAAe,EAAE,GAAG,IAAA,kIAAO;IAEnC,IAAA,gHAAS,EAAC;QACR,IAAIA,iBAAiB;YACnBD,OAAOE,OAAO,CAAC;QACjB,OAAO;YACLF,OAAOE,OAAO,CAAC;QACjB;IACF,GAAG;QAACD;QAAiBD;KAAO;IAE5B,qBAAO,qKAAC;QAAIG,WAAU;kBAAgD;;;;;;AACxE"}}]
-}

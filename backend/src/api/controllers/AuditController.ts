@@ -6,7 +6,7 @@ export class AuditController {
   async list(req: Request, res: Response) {
     try {
       const tenantId = (req as any).tenant_id;
-      const { user_id, resource_type, action } = req.query;
+      const { user_id, entity_type, action } = req.query;
       const limit = Math.min(parseInt(req.query.limit as string) || 50, 200);
       const offset = parseInt(req.query.offset as string) || 0;
 
@@ -14,7 +14,7 @@ export class AuditController {
         tenantId,
         {
           user_id: user_id as string,
-          resource_type: resource_type as string,
+          entity_type: entity_type as string,
           action: action as string,
         },
         limit,

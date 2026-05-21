@@ -1,25 +1,27 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { Knex } from 'knex';
 
-export class TaskMetricsMigration008 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
-      CREATE TABLE task_metrics (
-        id UUID PRIMARY KEY,
-        tenant_id UUID NOT NULL,
-        project_id UUID NOT NULL,
-        metric_date DATE NOT NULL,
-        status VARCHAR(50) NOT NULL,
-        count INT NOT NULL,
-        avg_cycle_time_hours DECIMAL(10,2),
-        updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-        CONSTRAINT uq_metrics UNIQUE (tenant_id, project_id, metric_date, status),
-        CONSTRAINT fk_task_metrics_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id),
-        CONSTRAINT fk_task_metrics_project FOREIGN KEY (project_id) REFERENCES projects(id)
+export async function up(knex: Knex): Promise<void> {
+  if (!(await knex.schema.hasTable('task_metrics'))) {
+    await knex.schema.createTable('task_metrics', (table) => {
+      table.uuid('id').primary();
+      table.uuid('tenant_id').notNullable();
+      table.uuid('project_id').notNullable();
+      table.date('metric_date').notNullable();
+      table.string('status', 50).notNullable();
+      table.integer('count').notNullable();
+      table.decimal('avg_cycle_time_hours', 10, 2);
+      table.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
+      table.unique(['tenant_id', 'project_id', 'metric_date', 'status'], 'uq_metrics');
+      table.foreign('tenant_id').references('tenants.id');
+      table.foreign('project_id').references('projects.id');
+      table.index(
+        ['tenant_id', 'project_id', 'metric_date'],
+        'idx_task_metrics_tenant_project_date'
       );
-      CREATE INDEX idx_task_metrics_tenant_project_date ON task_metrics(tenant_id, project_id, metric_date);
-    `);
+    });
   }
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE task_metrics;`);
-  }
+}
+
+export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTableIfExists('task_metrics');
 }

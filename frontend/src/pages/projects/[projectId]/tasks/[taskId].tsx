@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../../../../hooks/useAuth';
 import { useApi } from '../../../../hooks/useApi';
 import { Task, TaskHistory } from '../../../../types';
-import Layout from '../../../../components/Layout';
 import TaskDetail from '../../../../components/TaskDetail';
 
 interface TaskDetailPageProps {
@@ -36,26 +35,24 @@ export default function TaskDetailPage({ projectId, taskId }: TaskDetailPageProp
   }
 
   return (
-    <Layout>
-      <div className="px-4 py-6 sm:px-0">
-        <button onClick={() => router.back()} className="mb-4 text-primary hover:text-blue-700">
-          ← Back to Tasks
-        </button>
+    <div className="px-4 py-6 sm:px-0">
+      <button onClick={() => router.back()} className="mb-4 text-primary hover:text-blue-700">
+        ← Back to Tasks
+      </button>
 
-        {taskLoading && <div>Loading task...</div>}
-        {taskError && <div className="text-red-600">Error loading task</div>}
+      {taskLoading && <div>Loading task...</div>}
+      {taskError && <div className="text-red-600">Error loading task</div>}
 
-        {task && (
-          <TaskDetail
-            task={task}
-            projectId={projectId}
-            history={history || []}
-            historyLoading={historyLoading}
-            onUpdate={fetchTask}
-          />
-        )}
-      </div>
-    </Layout>
+      {task && (
+        <TaskDetail
+          task={task}
+          projectId={projectId}
+          history={history || []}
+          historyLoading={historyLoading}
+          onUpdate={fetchTask}
+        />
+      )}
+    </div>
   );
 }
 

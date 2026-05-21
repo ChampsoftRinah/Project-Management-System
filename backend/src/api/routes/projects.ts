@@ -11,7 +11,7 @@ router.get(
   '/projects',
   authMiddleware,
   tenantMiddleware,
-  authorizationMiddleware(['Developer', 'QA Engineer', 'Project Manager']),
+  authorizationMiddleware(['Tenant Admin', 'Developer', 'QA Engineer', 'Project Manager']),
   (req, res) => projectController.list(req, res)
 );
 
@@ -19,7 +19,7 @@ router.post(
   '/projects',
   authMiddleware,
   tenantMiddleware,
-  authorizationMiddleware(['Project Manager']),
+  authorizationMiddleware(['Tenant Admin', 'Project Manager']),
   (req, res) => projectController.create(req, res)
 );
 
@@ -27,7 +27,7 @@ router.get(
   '/projects/:id',
   authMiddleware,
   tenantMiddleware,
-  authorizationMiddleware(['Developer', 'QA Engineer', 'Project Manager']),
+  authorizationMiddleware(['Tenant Admin', 'Developer', 'QA Engineer', 'Project Manager']),
   (req, res) => projectController.findById(req, res)
 );
 

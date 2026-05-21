@@ -1,0 +1,13 @@
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/projects": "pages/projects.js",
+  "/dashboard": "pages/dashboard.js",
+  "/projects/[projectId]": "pages/projects/[projectId].js",
+  "/analytics": "pages/analytics.js",
+  "/projects/[projectId]/tasks": "pages/projects/[projectId]/tasks.js",
+  "/auth/login": "pages/auth/login.js",
+  "/projects/[projectId]/kanban": "pages/projects/[projectId]/kanban.js",
+  "/projects/[projectId]/analytics": "pages/projects/[projectId]/analytics.js"
+}

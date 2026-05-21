@@ -1,40 +1,28 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { Knex } from 'knex';
 
-export class AuditLogsMigration010 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
-      CREATE TYPE audit_action AS ENUM (
-        'create', 'read', 'update', 'delete',
-        'role_assigned', 'role_removed', 'login', 'logout',
-        'export', 'import', 'status_changed'
-      );
-
-      CREATE TABLE audit_logs (
-        id UUID PRIMARY KEY,
-        tenant_id UUID NOT NULL,
-        user_id UUID NOT NULL,
-        action audit_action NOT NULL,
-        resource_type VARCHAR(50) NOT NULL,
-        resource_id UUID NOT NULL,
-        changes JSONB,
-        ip_address INET,
-        user_agent TEXT,
-        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-        CONSTRAINT fk_audit_logs_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id),
-        CONSTRAINT fk_audit_logs_user FOREIGN KEY (user_id) REFERENCES users(id)
-      );
-
-      CREATE INDEX idx_audit_logs_tenant_created ON audit_logs(tenant_id, created_at DESC);
-      CREATE INDEX idx_audit_logs_user_created ON audit_logs(user_id, created_at DESC);
-      CREATE INDEX idx_audit_logs_resource ON audit_logs(resource_type, resource_id);
-      CREATE INDEX idx_audit_logs_action ON audit_logs(action);
-    `);
+export async function up(knex: Knex): Promise<void> {
+  if (!(await knex.schema.hasTable('audit_logs'))) {
+    await knex.schema.createTable('audit_logs', (table) => {
+      table.uuid('id').primary();
+      table.uuid('tenant_id').notNullable();
+      table.uuid('actor_id').notNullable();
+      table.string('action', 100).notNullable();
+      table.string('entity_type', 50).notNullable();
+      table.uuid('entity_id').notNullable();
+      table.jsonb('changes');
+      table.string('ip_address', 45);
+      table.string('user_agent', 500);
+      table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
+      table.foreign('tenant_id').references('tenants.id');
+      table.foreign('actor_id').references('users.id');
+      table.index(['tenant_id', 'created_at'], 'idx_audit_logs_tenant_created');
+      table.index(['actor_id', 'created_at'], 'idx_audit_logs_actor_created');
+      table.index(['entity_type', 'entity_id'], 'idx_audit_logs_entity');
+      table.index('action', 'idx_audit_logs_action');
+    });
   }
+}
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
-      DROP TABLE audit_logs;
-      DROP TYPE audit_action;
-    `);
-  }
+export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTableIfExists('audit_logs');
 }

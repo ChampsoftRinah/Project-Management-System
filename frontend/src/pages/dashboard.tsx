@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { useAuth } from '../hooks/useAuth';
 import { useApi } from '../hooks/useApi';
 import { Project, Task } from '../types';
-import Layout from '../components/Layout';
-
 export default function DashboardPage() {
   const { isAuthenticated, user } = useAuth();
   const router = useRouter();
@@ -22,152 +20,227 @@ export default function DashboardPage() {
     return <div>Loading...</div>;
   }
 
-  const activeProjects = projects?.filter((p) => p.is_active) || [];
+  const activeProjects = projects?.filter((project) => project.is_active) || [];
   const recentTasks =
     tasks
       ?.slice()
       .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
       .slice(0, 5) || [];
-  const openTasks = tasks?.filter((t) => t.status === 'Open') || [];
-  const completedTasks = tasks?.filter((t) => t.status === 'QA Passed') || [];
+  const openTasks = tasks?.filter((task) => task.status === 'Open') || [];
+  const completedTasks = tasks?.filter((task) => task.status === 'QA Passed') || [];
+  const inProgressTasks =
+    tasks?.filter((task) => task.status !== 'Open' && task.status !== 'QA Passed') || [];
+  const completionRate = tasks?.length
+    ? Math.round((completedTasks.length / tasks.length) * 100)
+    : 0;
 
   return (
-    <Layout>
-      <div className="px-4 py-6 sm:px-0">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-2">
-            Welcome back, {user?.first_name || 'User'}! Here's a quick overview of your projects and
-            tasks.
-          </p>
-        </div>
-
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-600">Active Projects</h3>
-            <div className="text-3xl font-bold text-primary mt-2">{activeProjects.length}</div>
+    <div className="space-y-8">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Overview</p>
+            <h1 className="mt-3 text-3xl font-semibold text-slate-900">
+              Welcome back, {user?.first_name || 'there'}
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+              Your tenant workspace is ready to manage projects, review progress, and keep teams
+              synced.
+            </p>
           </div>
-
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-600">Total Tasks</h3>
-            <div className="text-3xl font-bold text-gray-900 mt-2">{tasks?.length || 0}</div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-600">Open Tasks</h3>
-            <div className="text-3xl font-bold text-orange-600 mt-2">{openTasks.length}</div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-600">Completed</h3>
-            <div className="text-3xl font-bold text-green-600 mt-2">{completedTasks.length}</div>
-          </div>
-        </div>
-
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Projects */}
-          <div className="lg:col-span-2 bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Active Projects</h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="rounded-3xl bg-slate-50 p-4 text-center">
+              <p className="text-sm text-slate-500">Projects</p>
+              <p className="mt-3 text-2xl font-semibold text-slate-900">{activeProjects.length}</p>
             </div>
-            <div className="px-6 py-4">
-              {projectsLoading ? (
-                <div>Loading projects...</div>
-              ) : activeProjects.length > 0 ? (
-                <div className="space-y-3">
-                  {activeProjects.map((project) => (
-                    <Link key={project.id} href={`/projects/${project.id}`}>
-                      <a className="block p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors">
-                        <h3 className="font-medium text-gray-900">{project.name}</h3>
-                        <p className="text-sm text-gray-600 truncate">{project.description}</p>
-                        <div className="text-xs text-gray-500 mt-1">
-                          Updated: {new Date(project.updated_at).toLocaleDateString()}
-                        </div>
-                      </a>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center text-gray-500 py-8">
-                  <p>No active projects yet</p>
-                  <Link href="/projects">
-                    <a className="text-primary hover:text-blue-700 text-sm mt-2 inline-block">
-                      View all projects →
-                    </a>
-                  </Link>
-                </div>
-              )}
+            <div className="rounded-3xl bg-slate-50 p-4 text-center">
+              <p className="text-sm text-slate-500">Tasks</p>
+              <p className="mt-3 text-2xl font-semibold text-slate-900">{tasks?.length || 0}</p>
             </div>
-          </div>
-
-          {/* Completion Rate */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Completion Rate</h2>
+            <div className="rounded-3xl bg-slate-50 p-4 text-center">
+              <p className="text-sm text-slate-500">Open</p>
+              <p className="mt-3 text-2xl font-semibold text-orange-600">{openTasks.length}</p>
             </div>
-            <div className="px-6 py-8">
-              {tasksLoading ? (
-                <div>Loading...</div>
-              ) : tasks && tasks.length > 0 ? (
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-green-600">
-                    {Math.round((completedTasks.length / tasks.length) * 100)}%
-                  </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    {completedTasks.length} of {tasks.length} tasks completed
-                  </p>
-                </div>
-              ) : (
-                <div className="text-center text-gray-500">No tasks to track</div>
-              )}
+            <div className="rounded-3xl bg-slate-50 p-4 text-center">
+              <p className="text-sm text-slate-500">Done</p>
+              <p className="mt-3 text-2xl font-semibold text-emerald-600">
+                {completedTasks.length}
+              </p>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Recent Activity */}
-        <div className="mt-6 bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Recently Updated Tasks</h2>
+      <section className="grid gap-6 xl:grid-cols-[2fr_1fr]">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">Active projects</h2>
+              <p className="text-sm text-slate-500 mt-1">
+                Projects currently in progress for your tenant.
+              </p>
+            </div>
+            <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700">
+              {activeProjects.length} active
+            </span>
           </div>
-          <div className="px-6 py-4">
-            {tasksLoading ? (
-              <div>Loading tasks...</div>
-            ) : recentTasks.length > 0 ? (
+
+          <div className="mt-6 space-y-4">
+            {projectsLoading ? (
               <div className="space-y-3">
-                {recentTasks.map((task) => (
-                  <Link key={task.id} href={`/projects/${task.project_id}/tasks/${task.id}`}>
-                    <a className="flex justify-between items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 truncate">{task.title}</h3>
-                        <p className="text-xs text-gray-500">
-                          Status: {task.status} • Updated:{' '}
-                          {new Date(task.updated_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <span
-                        className={`ml-2 px-2 py-1 text-xs font-medium rounded ${
-                          task.status === 'QA Passed'
-                            ? 'bg-green-100 text-green-800'
-                            : task.status === 'Open'
-                              ? 'bg-gray-100 text-gray-800'
-                              : 'bg-blue-100 text-blue-800'
-                        }`}
-                      >
-                        {task.status}
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="h-24 rounded-3xl bg-slate-100 animate-pulse" />
+                ))}
+              </div>
+            ) : activeProjects.length > 0 ? (
+              <div className="space-y-4">
+                {activeProjects.map((project) => (
+                  <Link
+                    key={project.id}
+                    href={`/projects/${project.id}`}
+                    className="block rounded-3xl border border-slate-200 px-5 py-4 transition hover:border-blue-300 hover:bg-blue-50"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="font-semibold text-slate-900 truncate">{project.name}</p>
+                      <span className="text-xs uppercase tracking-[0.24em] text-slate-400">
+                        Updated {new Date(project.updated_at).toLocaleDateString()}
                       </span>
-                    </a>
+                    </div>
+                    <p className="mt-2 text-sm text-slate-500 line-clamp-2">
+                      {project.description || 'No description yet.'}
+                    </p>
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className="text-center text-gray-500 py-8">No tasks yet</div>
+              <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">
+                No active projects yet. Head to the Projects page to get started.
+              </div>
             )}
           </div>
         </div>
-      </div>
-    </Layout>
+
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Completion rate</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Your completion progress across all tasks.
+                </p>
+              </div>
+              <div className="text-3xl font-semibold text-emerald-600">{completionRate}%</div>
+            </div>
+            <div className="mt-6 rounded-full bg-slate-100 h-3 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-emerald-500"
+                style={{ width: `${completionRate}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Task breakdown</h2>
+            <div className="mt-5 space-y-4">
+              <div>
+                <div className="flex items-center justify-between text-sm text-slate-500">
+                  <span>Open tasks</span>
+                  <span>{openTasks.length}</span>
+                </div>
+                <div className="mt-2 h-2 rounded-full bg-slate-100">
+                  <div
+                    className="h-full rounded-full bg-blue-600"
+                    style={{
+                      width: `${tasks?.length ? (openTasks.length / tasks.length) * 100 : 0}%`,
+                    }}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between text-sm text-slate-500">
+                  <span>In progress</span>
+                  <span>{inProgressTasks.length}</span>
+                </div>
+                <div className="mt-2 h-2 rounded-full bg-slate-100">
+                  <div
+                    className="h-full rounded-full bg-indigo-600"
+                    style={{
+                      width: `${tasks?.length ? (inProgressTasks.length / tasks.length) * 100 : 0}%`,
+                    }}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between text-sm text-slate-500">
+                  <span>Completed</span>
+                  <span>{completedTasks.length}</span>
+                </div>
+                <div className="mt-2 h-2 rounded-full bg-slate-100">
+                  <div
+                    className="h-full rounded-full bg-emerald-600"
+                    style={{
+                      width: `${tasks?.length ? (completedTasks.length / tasks.length) * 100 : 0}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Recent activity</h2>
+            <p className="text-sm text-slate-500 mt-1">Latest task updates across your projects.</p>
+          </div>
+          <Link
+            href="/projects"
+            className="text-sm font-semibold text-blue-600 hover:text-blue-700"
+          >
+            View all projects →
+          </Link>
+        </div>
+
+        <div className="mt-6 space-y-4">
+          {tasksLoading ? (
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="h-24 rounded-3xl bg-slate-100 animate-pulse" />
+              ))}
+            </div>
+          ) : recentTasks.length > 0 ? (
+            recentTasks.map((task) => (
+              <Link
+                key={task.id}
+                href={`/projects/${task.project_id}/tasks/${task.id}`}
+                className="block rounded-3xl border border-slate-200 px-5 py-4 transition hover:border-blue-300 hover:bg-blue-50"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-slate-900 truncate">{task.title}</p>
+                    <p className="mt-1 text-sm text-slate-500 truncate">
+                      {task.description || 'No description provided.'}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                    {task.status}
+                  </span>
+                </div>
+                <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+                  <span>{new Date(task.updated_at).toLocaleDateString()}</span>
+                  <span>{task.priority} priority</span>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">
+              No recent task activity yet.
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }

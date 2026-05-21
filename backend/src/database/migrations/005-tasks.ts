@@ -1,34 +1,66 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { Knex } from 'knex';
 
-export class TasksMigration005 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
-      CREATE TYPE task_status AS ENUM ('Open', 'Ready for Development', 'In Development', 'Development Completed', 'Ready for QA', 'In QA', 'QA Passed', 'QA Failed');
-      CREATE TYPE task_priority AS ENUM ('Low', 'Medium', 'High', 'Critical');
-      CREATE TABLE tasks (
-        id UUID PRIMARY KEY,
-        tenant_id UUID NOT NULL,
-        project_id UUID NOT NULL,
-        title VARCHAR(255) NOT NULL,
-        description TEXT,
-        status task_status NOT NULL DEFAULT 'Open',
-        priority task_priority DEFAULT 'Medium',
-        assignee_id UUID,
-        reporter_id UUID NOT NULL,
-        labels TEXT[],
-        version INT NOT NULL DEFAULT 1,
-        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-        CONSTRAINT fk_tasks_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id),
-        CONSTRAINT fk_tasks_project FOREIGN KEY (project_id) REFERENCES projects(id),
-        CONSTRAINT fk_tasks_assignee FOREIGN KEY (assignee_id) REFERENCES users(id),
-        CONSTRAINT fk_tasks_reporter FOREIGN KEY (reporter_id) REFERENCES users(id)
-      );
-      CREATE INDEX idx_tasks_tenant_status ON tasks(tenant_id, status);
-      CREATE INDEX idx_tasks_tenant_project_status ON tasks(tenant_id, project_id, status);
-    `);
+const taskStatusValues = [
+  'Open',
+  'Ready for Development',
+  'In Development',
+  'Development Completed',
+  'Ready for QA',
+  'In QA',
+  'QA Passed',
+  'QA Failed',
+] as const;
+
+const taskPriorityValues = ['Low', 'Medium', 'High', 'Critical'] as const;
+
+export async function up(knex: Knex): Promise<void> {
+  await knex.schema.raw(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_status') THEN
+        CREATE TYPE task_status AS ENUM (${taskStatusValues.map((v) => `'${v}'`).join(', ')});
+      END IF;
+    END
+    $$;
+  `);
+
+  await knex.schema.raw(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_priority') THEN
+        CREATE TYPE task_priority AS ENUM (${taskPriorityValues.map((v) => `'${v}'`).join(', ')});
+      END IF;
+    END
+    $$;
+  `);
+
+  if (!(await knex.schema.hasTable('tasks'))) {
+    await knex.schema.createTable('tasks', (table) => {
+      table.uuid('id').primary();
+      table.uuid('tenant_id').notNullable();
+      table.uuid('project_id').notNullable();
+      table.string('title', 255).notNullable();
+      table.text('description');
+      table.specificType('status', 'task_status').notNullable().defaultTo('Open');
+      table.specificType('priority', 'task_priority').defaultTo('Medium');
+      table.uuid('assignee_id');
+      table.uuid('reporter_id').notNullable();
+      table.specificType('labels', 'text[]');
+      table.integer('version').notNullable().defaultTo(1);
+      table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
+      table.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
+      table.foreign('tenant_id').references('tenants.id');
+      table.foreign('project_id').references('projects.id');
+      table.foreign('assignee_id').references('users.id');
+      table.foreign('reporter_id').references('users.id');
+      table.index(['tenant_id', 'status'], 'idx_tasks_tenant_status');
+      table.index(['tenant_id', 'project_id', 'status'], 'idx_tasks_tenant_project_status');
+    });
   }
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE tasks; DROP TYPE task_status; DROP TYPE task_priority;`);
-  }
+}
+
+export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTableIfExists('tasks');
+  await knex.schema.raw('DROP TYPE IF EXISTS task_status CASCADE');
+  await knex.schema.raw('DROP TYPE IF EXISTS task_priority CASCADE');
 }

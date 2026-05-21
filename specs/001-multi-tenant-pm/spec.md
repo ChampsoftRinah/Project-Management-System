@@ -7,6 +7,21 @@
 
 ## User Scenarios & Testing _(mandatory)_
 
+### User Story 0 - Tenant Signup & Onboarding (Priority: P1)
+
+As a Tenant Admin or organization lead, I want to sign up and create my tenant so I can begin using the project management system.
+
+Why this priority: Onboarding is required before any tenant can create projects, invite users, and track work.
+
+Independent Test: A new tenant signs up, receives tenant context, and is redirected to the dashboard with their tenant selected.
+
+Acceptance Scenarios:
+
+1. Given a new organization, When they submit signup with tenant name, admin name, email, and password, Then the tenant and account are created and the user is authenticated.
+2. Given a newly created tenant, When the admin signs in, Then they see their tenant dashboard and can create the first project.
+
+---
+
 ### User Story 1 - Tenant Admin: Create and manage projects (Priority: P1)
 
 As a Tenant Admin (organization owner), I want to create and configure projects so my teams can begin work within my organization.
@@ -148,7 +163,7 @@ Acceptance Scenarios:
 
 ## Assumptions
 
-- Authentication is already available (OIDC or SSO) and will be integrated; scope/claims will include tenant and roles.
+- Authentication uses JWT bearer tokens with tenant_id and roles claims; the frontend stores the token and includes it in `Authorization: Bearer <token>` headers.
 - Storage will use a relational DB (Postgres) supporting row-level security OR per-tenant schema; final choice is for planning phase.
 - UI design system will be supplied or created as a small shared component library (Next.js components).
 

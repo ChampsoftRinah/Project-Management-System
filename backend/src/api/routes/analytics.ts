@@ -11,7 +11,7 @@ router.get(
   '/projects/:project_id/analytics/summary',
   authMiddleware,
   tenantMiddleware,
-  authorizationMiddleware(['Developer', 'QA Engineer', 'Project Manager']),
+  authorizationMiddleware(['Tenant Admin', 'Developer', 'QA Engineer', 'Project Manager']),
   (req, res) => analyticsController.getSummary(req, res)
 );
 

@@ -1,23 +1,22 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { Knex } from 'knex';
 
-export class UserRolesMigration003 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
-      CREATE TABLE user_roles (
-        id UUID PRIMARY KEY,
-        tenant_id UUID NOT NULL,
-        user_id UUID NOT NULL,
-        role VARCHAR(50) NOT NULL,
-        assigned_at TIMESTAMP NOT NULL DEFAULT NOW(),
-        assigned_by UUID,
-        CONSTRAINT uq_tenant_user_role UNIQUE (tenant_id, user_id, role),
-        CONSTRAINT fk_user_roles_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id),
-        CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id) REFERENCES users(id)
-      );
-      CREATE INDEX idx_user_roles_tenant_role ON user_roles(tenant_id, role);
-    `);
+export async function up(knex: Knex): Promise<void> {
+  if (!(await knex.schema.hasTable('user_roles'))) {
+    await knex.schema.createTable('user_roles', (table) => {
+      table.uuid('id').primary();
+      table.uuid('tenant_id').notNullable();
+      table.uuid('user_id').notNullable();
+      table.string('role', 50).notNullable();
+      table.timestamp('assigned_at').notNullable().defaultTo(knex.fn.now());
+      table.uuid('assigned_by');
+      table.unique(['tenant_id', 'user_id', 'role'], 'uq_tenant_user_role');
+      table.foreign('tenant_id').references('tenants.id');
+      table.foreign('user_id').references('users.id');
+      table.index(['tenant_id', 'role'], 'idx_user_roles_tenant_role');
+    });
   }
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE user_roles;`);
-  }
+}
+
+export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTableIfExists('user_roles');
 }

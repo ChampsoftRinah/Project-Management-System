@@ -2,9 +2,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../../hooks/useAuth';
 import { useApi } from '../../../hooks/useApi';
-import Layout from '../../../components/Layout';
 import AnalyticsDashboard from '../../../components/AnalyticsDashboard';
 import DateRangePicker from '../../../components/DateRangePicker';
+import ProjectLayout from '../../../components/ProjectLayout';
 import { AnalyticsSummary } from '../../../types';
 
 export default function AnalyticsPage() {
@@ -32,34 +32,50 @@ export default function AnalyticsPage() {
   }, [isAuthenticated, router]);
 
   if (!isAuthenticated) {
-    return <div>Loading...</div>;
+    return <div className="p-6 text-center text-slate-600">Loading...</div>;
+  }
+
+  if (!projectIdString) {
+    return <div className="p-6 text-center text-slate-600">Loading project...</div>;
   }
 
   return (
-    <Layout>
-      <div className="px-4 py-6 sm:px-0">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Project Analytics</h1>
-            <p className="text-sm text-gray-600 mt-1">
-              Track completion, bottlenecks, and velocity across your project.
-            </p>
+    <ProjectLayout projectId={projectIdString} activeTab="analytics">
+      <div className="space-y-6">
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Project Analytics</h1>
+              <p className="text-sm text-gray-600 mt-1">
+                Track completion, bottlenecks, and velocity across your project.
+              </p>
+            </div>
+            <button
+              onClick={() => router.push(`/projects/${projectIdString}/tasks`)}
+              className="text-blue-600 hover:text-blue-800"
+            >
+              Back to Tasks →
+            </button>
           </div>
-          <button
-            onClick={() => router.push(`/projects/${projectId}/tasks`)}
-            className="text-primary hover:text-blue-700"
-          >
-            Back to Tasks →
-          </button>
-        </div>
+        </section>
 
-        <DateRangePicker from={range.from} to={range.to} onChange={setRange} />
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <DateRangePicker from={range.from} to={range.to} onChange={setRange} />
+        </section>
 
-        {loading && <div>Loading analytics...</div>}
-        {error && <div className="text-red-600">Error loading analytics</div>}
+        {loading && (
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-8 text-center text-slate-500">
+            Loading analytics...
+          </div>
+        )}
+        {error && (
+          <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-center text-red-700">
+            Error loading analytics.
+          </div>
+        )}
 
         {analytics && <AnalyticsDashboard data={analytics} />}
       </div>
-    </Layout>
+    </ProjectLayout>
   );
 }

@@ -1,25 +1,24 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { Knex } from 'knex';
 
-export class TaskCommentsMigration007 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`
-      CREATE TABLE task_comments (
-        id UUID PRIMARY KEY,
-        tenant_id UUID NOT NULL,
-        task_id UUID NOT NULL,
-        author_id UUID NOT NULL,
-        body TEXT NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-        is_deleted BOOLEAN DEFAULT false,
-        CONSTRAINT fk_task_comments_tenant FOREIGN KEY (tenant_id) REFERENCES tenants(id),
-        CONSTRAINT fk_task_comments_task FOREIGN KEY (task_id) REFERENCES tasks(id),
-        CONSTRAINT fk_task_comments_author FOREIGN KEY (author_id) REFERENCES users(id)
-      );
-      CREATE INDEX idx_task_comments_tenant_task_created ON task_comments(tenant_id, task_id, created_at);
-    `);
+export async function up(knex: Knex): Promise<void> {
+  if (!(await knex.schema.hasTable('task_comments'))) {
+    await knex.schema.createTable('task_comments', (table) => {
+      table.uuid('id').primary();
+      table.uuid('tenant_id').notNullable();
+      table.uuid('task_id').notNullable();
+      table.uuid('author_id').notNullable();
+      table.text('body').notNullable();
+      table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
+      table.timestamp('updated_at').notNullable().defaultTo(knex.fn.now());
+      table.boolean('is_deleted').notNullable().defaultTo(false);
+      table.foreign('tenant_id').references('tenants.id');
+      table.foreign('task_id').references('tasks.id');
+      table.foreign('author_id').references('users.id');
+      table.index(['tenant_id', 'task_id', 'created_at'], 'idx_task_comments_tenant_task_created');
+    });
   }
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE task_comments;`);
-  }
+}
+
+export async function down(knex: Knex): Promise<void> {
+  await knex.schema.dropTableIfExists('task_comments');
 }
